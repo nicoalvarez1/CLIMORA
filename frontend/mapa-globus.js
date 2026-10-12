@@ -26,6 +26,25 @@
 
     let campActiu = 1;
     let ultimPunt = null;
+    let puntSobre = null;
+    const seleccio = { 1: null, 2: null };
+
+    // Colors: daurat per a totes les ciutats, llima i taronja per a les triades.
+    const COLOR_CIUTAT = "#ffd36b";
+    const COLOR_SOBRE = "#ffffff";
+    const COLOR_TRIA = { 1: "#d8ed8b", 2: "#ff9f5a" };
+
+    function numeroTria(point) {
+        if (point === seleccio[1]) return 1;
+        if (point === seleccio[2]) return 2;
+        return 0;
+    }
+
+    function hexARgb(hex) {
+        return [1, 3, 5].map(function (i) {
+            return parseInt(hex.slice(i, i + 2), 16);
+        }).join(",");
+    }
     let contextAudio = null;
     let puntsCarregats = [];
 
@@ -122,15 +141,52 @@
         .pointLat("lat")
         .pointLng("lng")
         .pointAltitude(function (point) {
-            return point === ultimPunt ? 0.06 : 0.02;
+            if (numeroTria(point)) return 0.05;
+            return point === puntSobre ? 0.03 : 0.008;
         })
         .pointRadius(function (point) {
-            return point === ultimPunt ? 0.65 : 0.34;
+            if (numeroTria(point)) return 0.7;
+            return point === puntSobre ? 0.62 : 0.4;
         })
         .pointColor(function (point) {
-            return point === ultimPunt ? "#d8ed8b" : "#ff334f";
+            const tria = numeroTria(point);
+            if (tria) return COLOR_TRIA[tria];
+            return point === puntSobre ? COLOR_SOBRE : COLOR_CIUTAT;
         })
-        .pointResolution(12)
+        .pointResolution(18)
+        .pointsMerge(false)
+        .pointsTransitionDuration(250)
+        .onPointHover(function (point) {
+            puntSobre = point || null;
+            contenidor.style.cursor = point ? "pointer" : "grab";
+            globus.pointsData([...puntsCarregats]);
+        })
+        // Anells que bateguen al voltant de les ciutats triades.
+        .ringsData([])
+        .ringLat("lat")
+        .ringLng("lng")
+        .ringAltitude(0.012)
+        .ringMaxRadius(4)
+        .ringPropagationSpeed(2.2)
+        .ringRepeatPeriod(850)
+        .ringColor(function (point) {
+            const rgb = hexARgb(COLOR_TRIA[numeroTria(point)] || COLOR_CIUTAT);
+            return function (t) {
+                return "rgba(" + rgb + "," + (1 - t) + ")";
+            };
+        })
+        // Arc animat entre les dues ciutats triades.
+        .arcsData([])
+        .arcStartLat(function (arc) { return arc.inici.lat; })
+        .arcStartLng(function (arc) { return arc.inici.lng; })
+        .arcEndLat(function (arc) { return arc.final.lat; })
+        .arcEndLng(function (arc) { return arc.final.lng; })
+        .arcColor(function () { return [COLOR_TRIA[1], COLOR_TRIA[2]]; })
+        .arcAltitudeAutoScale(0.35)
+        .arcStroke(0.45)
+        .arcDashLength(0.45)
+        .arcDashGap(0.2)
+        .arcDashAnimateTime(2200)
         .pointLabel(function (point) {
             return '<div class="scene-tooltip"><strong>' +
                 escaparHTML(point.name) + "</strong><br>" +
@@ -138,6 +194,22 @@
         })
         .onPointClick(function (point) {
             ultimPunt = point;
+            seleccio[campActiu] = point;
+
+            // Si es tria la mateixa ciutat per als dos camps, només compta l'últim.
+            const altre = campActiu === 1 ? 2 : 1;
+            if (seleccio[altre] === point) seleccio[altre] = null;
+
+            const triades = [seleccio[1], seleccio[2]].filter(Boolean);
+            globus.ringsData(triades);
+            globus.arcsData(
+                triades.length === 2
+                    ? [{ inici: seleccio[1], final: seleccio[2] }]
+                    : []
+            );
+            globus.pointOfView(
+                { lat: point.lat, lng: point.lng, altitude: 1.9 }, 900
+            );
 
             const camp = campActiu === 1 ? camp1 : camp2;
             camp.value = point.name;
@@ -228,7 +300,7 @@
             globus.pointsData(puntsCarregats);
 
             missatge.textContent =
-                "Tria la primera ciutat i clica un punt vermell. " +
+                "Tria la primera ciutat i clica un punt daurat. " +
                 puntsCarregats.length + " ciutats disponibles.";
 
         } catch (error) {
