@@ -397,3 +397,18 @@ def top_paisos(tipus: str):
             "Estimació orientativa, no un rànquing oficial."
         ),
     }
+
+
+# ---------------------------------------------------------------------------
+# Publicació: el mateix servidor també serveix la pàgina (carpeta frontend).
+# Ha d'anar al final, després de totes les rutes.
+# ---------------------------------------------------------------------------
+
+from pathlib import Path
+
+from fastapi.staticfiles import StaticFiles
+
+FRONTEND = Path(__file__).resolve().parent.parent / "frontend"
+
+if FRONTEND.is_dir():
+    app.mount("/", StaticFiles(directory=FRONTEND, html=True), name="frontend")
