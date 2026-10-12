@@ -1,7 +1,10 @@
 (function () {
     "use strict";
 
-    const API_RISCOS = "http://127.0.0.1:8000/riscos";
+    const API_RISCOS =
+        ((location.protocol === "file:" || location.port === "5500")
+            ? "http://127.0.0.1:8000"   // proves a l'ordinador (Live Server)
+            : location.origin) + "/riscos";
 
     const formulari = document.querySelector("#formulari-riscos");
     const camp = document.querySelector("#ciutat-risc");

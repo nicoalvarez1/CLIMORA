@@ -10,7 +10,11 @@ const titol2 = document.querySelector("#titol2");
 const cosTaula = document.querySelector("#cos-taula");
 const conclusio = document.querySelector("#conclusio");
 
-const API_URL = "http://127.0.0.1:8000/comparar";
+// Publicat: mateix domini que la pàgina. En local: el servidor del port 8000.
+const API_URL =
+    ((location.protocol === "file:" || location.port === "5500")
+        ? "http://127.0.0.1:8000"   // proves a l'ordinador (Live Server)
+        : location.origin) + "/comparar";
 
 formulari.addEventListener("submit", async function (event) {
     event.preventDefault();

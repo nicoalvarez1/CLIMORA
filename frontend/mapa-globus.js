@@ -1,7 +1,10 @@
 (function () {
     "use strict";
 
-    const API_BASE = "http://127.0.0.1:8000";
+    const API_BASE =
+        (location.protocol === "file:" || location.port === "5500")
+            ? "http://127.0.0.1:8000"   // proves a l'ordinador (Live Server)
+            : location.origin;
 
     const contenidor = document.getElementById("mapa-ciutats");
     const camp1 = document.getElementById("ciudad1");
