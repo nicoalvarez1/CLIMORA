@@ -1,0 +1,527 @@
+:root {
+    --primary: #4263eb;
+    --primary-dark: #304bc0;
+    --background: #f7f8fc;
+    --surface: #ffffff;
+    --text: #20243a;
+    --muted: #737b91;
+    --border: #e7eaf2;
+    --success: #16865c;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+/* =========================
+   BARRA DE NAVEGACIÓN
+========================= */
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 8%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.logo span {
+    color: var(--primary);
+}
+
+.navbar nav {
+    display: flex;
+    gap: 30px;
+}
+
+.navbar nav a {
+    color: var(--muted);
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.navbar nav a:hover {
+    color: var(--primary);
+}
+
+.nav-button {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background 0.3s;
+}
+
+.nav-button:hover,
+.primary-button:hover {
+    background: var(--primary-dark);
+}
+
+/* =========================
+   PORTADA
+========================= */
+
+.hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 60px;
+    padding: 80px 8%;
+    background: linear-gradient(135deg, #f7f8fc, #edf1ff);
+}
+
+.hero-content {
+    max-width: 540px;
+}
+
+.tag {
+    display: inline-block;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px;
+}
+
+.hero h1 {
+    font-size: clamp(38px, 5vw, 64px);
+    line-height: 1.1;
+    letter-spacing: -2px;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    color: var(--primary);
+}
+
+.hero-content p {
+    color: var(--muted);
+    font-size: 17px;
+    margin-bottom: 30px;
+    max-width: 450px;
+}
+
+.primary-button {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-weight: 700;
+    transition: background 0.3s, transform 0.3s;
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+}
+
+.hero-image {
+    position: relative;
+}
+
+.hero-image > img {
+    width: 100%;
+    height: 420px;
+    object-fit: cover;
+    border-radius: 25px;
+    box-shadow: 0 20px 50px #27365b25;
+}
+
+.image-label {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    padding: 15px 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px #00000012;
+}
+
+.image-label > span {
+    font-size: 27px;
+}
+
+.image-label strong,
+.image-label small {
+    display: block;
+}
+
+.image-label small {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+/* =========================
+   SECCIONES
+========================= */
+
+.section {
+    padding: 75px 8%;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-heading h2 {
+    font-size: clamp(27px, 4vw, 38px);
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+}
+
+.section-heading p {
+    color: var(--muted);
+}
+
+/* =========================
+   TARJETAS DE CIUDADES
+========================= */
+
+.city-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.city-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px #29365c08;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.city-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px #29365c12;
+}
+
+.city-image {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+}
+
+.city-info {
+    padding: 25px;
+}
+
+.country {
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.city-info h3 {
+    font-size: 29px;
+    margin: 5px 0;
+}
+
+.city-description {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.metric {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 14px;
+    background: #f7f8fc;
+    border-radius: 12px;
+}
+
+.metric span {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.metric strong {
+    font-size: 15px;
+    overflow-wrap: anywhere;
+}
+
+.disclaimer {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 25px;
+}
+
+/* =========================
+   TABLA COMPARATIVA
+========================= */
+
+.table-section {
+    background: white;
+}
+
+.table-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    background: white;
+}
+
+th,
+td {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+th {
+    background: #f1f4ff;
+    color: var(--text);
+    font-size: 14px;
+}
+
+td {
+    font-size: 14px;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background: #fafbff;
+}
+
+.winner {
+    color: var(--success);
+    font-weight: 700;
+}
+
+/* =========================
+   VENTAJAS
+========================= */
+
+.benefit-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+}
+
+.benefit-card {
+    background: white;
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    transition: transform 0.3s;
+}
+
+.benefit-card:hover {
+    transform: translateY(-5px);
+}
+
+.benefit-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 55px;
+    height: 55px;
+    background: #edf1ff;
+    border-radius: 15px;
+    font-size: 27px;
+    margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.benefit-card p {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+/* =========================
+   PIE DE PÁGINA
+========================= */
+
+.footer {
+    padding: 40px 8%;
+    background: #20243a;
+    color: white;
+    text-align: center;
+}
+
+.footer .logo {
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.footer .logo span {
+    color: #8fa4ff;
+}
+
+.footer p {
+    color: #c1c6d6;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.footer small {
+    color: #9ba2b8;
+    font-size: 12px;
+}
+
+/* =========================
+   DISEÑO RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+    .hero {
+        gap: 35px;
+        padding: 60px 6%;
+    }
+
+    .hero-image > img {
+        height: 350px;
+    }
+
+    .section {
+        padding: 60px 6%;
+    }
+
+    .benefit-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .navbar {
+        padding: 18px 5%;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .navbar nav {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .navbar nav a {
+        font-size: 12px;
+    }
+
+    .logo {
+        font-size: 20px;
+    }
+
+    .nav-button {
+        padding: 9px 14px;
+        font-size: 12px;
+    }
+
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 50px 6%;
+    }
+
+    .hero h1 {
+        font-size: 43px;
+    }
+
+    .hero-content p {
+        font-size: 15px;
+    }
+
+    .hero-image > img {
+        height: 280px;
+    }
+
+    .section {
+        padding: 50px 5%;
+    }
+
+    .city-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .city-image {
+        height: 220px;
+    }
+
+    .city-info {
+        padding: 20px;
+    }
+
+    .metrics {
+        gap: 10px;
+    }
+
+    .metric {
+        padding: 12px;
+    }
+
+    .metric strong {
+        font-size: 13px;
+    }
+
+    .benefit-grid {
+        grid-template-columns: 1fr;
+    }
+
+    th,
+    td {
+        padding: 14px;
+        font-size: 12px;
+    }
+}

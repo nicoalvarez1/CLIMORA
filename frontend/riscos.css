@@ -1,0 +1,331 @@
+/* CLIMORA — apartat "Riscos naturals" (fa servir les variables de index.html) */
+
+#riscos { margin-top: 85px; scroll-margin-top: 20px; }
+
+#formulari-riscos {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 16px;
+    align-items: end;
+}
+
+#boto-riscos {
+    min-height: 56px;
+    padding: 0 23px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--verd);
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .2s;
+}
+
+#boto-riscos:hover { background: var(--verd-clar); transform: translateY(-2px); }
+#boto-riscos:disabled { opacity: .7; cursor: wait; }
+
+#missatge-riscos {
+    min-height: 20px;
+    margin: 14px 0 0;
+    color: var(--verd-clar);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+#resultat-riscos { margin-top: 26px; }
+
+.risc-resum {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 26px;
+    padding: 28px;
+    border-radius: var(--radi);
+    background: var(--verd);
+    color: white;
+    box-shadow: var(--ombra);
+}
+
+.risc-index {
+    width: 118px;
+    height: 118px;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    border: 5px solid var(--color-risc, var(--llima));
+    border-radius: 50%;
+}
+
+.risc-index strong { font: 800 38px/1 "Manrope", sans-serif; }
+.risc-index span { margin-top: 4px; font-size: 10px; opacity: .75; }
+
+.risc-resum h3 { margin: 0; font-size: 26px; letter-spacing: -.6px; }
+
+.risc-resum p {
+    margin: 8px 0 0;
+    color: rgba(255,255,255,.82);
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.risc-llista {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 20px;
+}
+
+.risc-targeta {
+    padding: 22px;
+    border: 1px solid var(--linia);
+    border-radius: var(--radi);
+    background: white;
+    box-shadow: var(--ombra);
+}
+
+.risc-cap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.risc-cap h4 {
+    margin: 0;
+    font: 700 15px "Manrope", sans-serif;
+}
+
+.risc-nivell {
+    flex-shrink: 0;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: var(--color-risc);
+    color: white;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.risc-barra {
+    height: 8px;
+    margin: 16px 0 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #eef0eb;
+}
+
+.risc-barra div {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--color-risc);
+    transition: width .6s ease-out;
+}
+
+.risc-targeta p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.nivell-baix     { --color-risc: #3f8f68; }
+.nivell-moderat  { --color-risc: #b8901f; }
+.nivell-alt      { --color-risc: #d9773a; }
+.nivell-molt-alt { --color-risc: #c0392b; }
+
+#nota-riscos { margin-top: 18px; }
+
+@media (max-width: 600px) {
+    #formulari-riscos { grid-template-columns: 1fr; }
+    .risc-resum { grid-template-columns: 1fr; justify-items: start; }
+    .risc-llista { grid-template-columns: 1fr; }
+}
+
+/* ---------- Pestanyes i vistes ---------- */
+
+.vista-oculta { display: none !important; }
+
+#riscos { margin-top: 0; }
+
+.pestanyes {
+    display: inline-flex;
+    gap: 6px;
+    margin-bottom: 45px;
+    padding: 6px;
+    border: 1px solid var(--linia);
+    border-radius: 999px;
+    background: white;
+    box-shadow: var(--ombra);
+}
+
+.pestanya {
+    padding: 12px 20px;
+    border-radius: 999px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.pestanya:hover { color: var(--verd); }
+
+.pestanya.activa {
+    background: var(--verd);
+    color: white;
+}
+
+.boto-hero.boto-hero-riscos {
+    background: transparent;
+    color: white;
+    box-shadow: inset 0 0 0 2px var(--llima);
+}
+
+/* ---------- Galeria de riscos ---------- */
+
+.risc-galeria {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.risc-foto {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 150px;
+    margin: 0;
+    padding: 14px;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--verd) center/cover;
+    color: white;
+    box-shadow: var(--ombra);
+}
+
+.risc-foto::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(0deg, rgba(8,34,26,.85), rgba(8,34,26,.05) 65%);
+}
+
+.risc-foto {
+    justify-content: space-between;
+    gap: 8px;
+    border: 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.risc-foto:hover { transform: translateY(-3px); }
+
+.risc-foto.activa { box-shadow: 0 0 0 4px var(--llima), var(--ombra); }
+
+.risc-foto-nom, .risc-foto-accio { position: relative; }
+
+.risc-foto-nom { font: 700 13px "Manrope", sans-serif; }
+
+.risc-foto-accio {
+    color: var(--llima);
+    font-size: 10px;
+    font-weight: 800;
+    opacity: 0;
+    transition: opacity .2s;
+}
+
+.risc-foto:hover .risc-foto-accio,
+.risc-foto:focus-visible .risc-foto-accio,
+.risc-foto.activa .risc-foto-accio { opacity: 1; }
+
+/* ---------- Top 10 de països ---------- */
+
+.risc-top {
+    margin-bottom: 24px;
+    padding: 26px 28px;
+    border: 1px solid var(--linia);
+    border-radius: var(--radi);
+    background: white;
+    box-shadow: var(--ombra);
+}
+
+.risc-top-cap {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.risc-top-cap h3 { margin: 6px 0 0; font-size: 21px; }
+
+.risc-top-tancar {
+    flex-shrink: 0;
+    padding: 9px 13px;
+    border: 1px solid var(--linia);
+    border-radius: 999px;
+    background: white;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.risc-top-llista { margin: 0; padding: 0; list-style: none; }
+
+.risc-top-llista li {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1.3fr) minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid #f0f2ed;
+}
+
+.risc-top-llista li:last-child { border-bottom: 0; }
+
+.risc-top-posicio {
+    color: var(--muted);
+    font: 800 17px "Manrope", sans-serif;
+}
+
+.risc-top-info strong { display: block; font-size: 14px; }
+.risc-top-info span { color: var(--muted); font-size: 11px; }
+
+.risc-top-llista .risc-barra { margin: 0; }
+
+.risc-top-estat { margin: 0; color: var(--muted); font-size: 12px; }
+
+.risc-top .nota { margin: 12px 0 0; }
+
+@media (max-width: 600px) {
+    .risc-top { padding: 18px; }
+    .risc-top-llista li { grid-template-columns: 26px minmax(0, 1fr) auto; }
+    .risc-top-llista .risc-barra { display: none; }
+}
+
+/* ---------- Foto a cada targeta de resultat ---------- */
+
+.risc-targeta { padding: 0; overflow: hidden; }
+
+.risc-targeta-foto {
+    height: 120px;
+    background: var(--verd) center/cover;
+}
+
+.risc-targeta-cos { padding: 20px 22px 22px; }
+
+@media (max-width: 850px) {
+    .risc-galeria { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+    .pestanyes { display: flex; margin-bottom: 30px; }
+    .pestanya { flex: 1; padding: 12px 8px; text-align: center; }
+    .risc-foto { min-height: 110px; }
+}
+
+.risc-top-llista .risc-nivell { min-width: 100px; text-align: center; }
