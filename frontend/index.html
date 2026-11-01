@@ -760,6 +760,21 @@
             }
         }
     </style>
+    <style>
+        .viajes-seccion{padding:90px 0;background:#f7f7f1;color:#172b23}
+        .viajes-form{display:grid;grid-template-columns:2fr 1fr 1.3fr auto;gap:14px;align-items:end;background:white;padding:22px;border:1px solid #e2e8e1;border-radius:18px}
+        .viajes-form label{display:grid;gap:8px;font-size:13px;font-weight:700}
+        .viajes-form input{font:inherit;border:1px solid #e2e8e1;border-radius:10px;padding:12px}
+        .viajes-form button{font:inherit;border:0;border-radius:999px;padding:14px 20px;background:#123b2f;color:white;font-weight:700;cursor:pointer}
+        .viajes-form button:disabled{opacity:.6;cursor:wait}
+        #viajes-estado{min-height:28px;margin:18px 2px;color:#6c7b72}
+        .viajes-resultados{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+        .viaje-dia{background:white;border:1px solid #e2e8e1;border-radius:16px;padding:20px}
+        .viaje-dia h3{margin:0 0 12px}.viaje-lugar{font-size:19px;font-weight:700;color:#123b2f}
+        .viaje-clima{padding-top:12px;border-top:1px solid #e2e8e1;font-size:14px}
+        .viajes-fuentes{font-size:12px;color:#6c7b72;margin-top:24px}
+        @media(max-width:700px){.viajes-form{grid-template-columns:1fr 1fr}.viajes-form label:first-child,.viajes-form button{grid-column:1/-1}}
+    </style>
 </head>
 
 <body>
@@ -776,6 +791,7 @@
             <a class="enllac" href="#projecte">El projecte</a>
             <a class="enllac" href="#comparador">Explora les dades</a>
             <a class="enllac" href="#riscos">Riscos naturals</a>
+            <a class="enllac" href="#viajes">Planificador</a>
             <a class="cta" href="#comparador">Comença a explorar ↗</a>
         </nav>
     </header>
@@ -793,6 +809,7 @@
                 <div class="botons-hero">
                     <a class="boto-hero" href="#comparador">Compara dues ciutats ↗</a>
                     <a class="boto-hero boto-hero-riscos" href="#riscos">Analitza riscos naturals ↗</a>
+                    <a class="enllac-hero" href="#viajes">Planifica un viatge ↗</a>
                     <a class="enllac-hero" href="#projecte">Descobreix CLIMORA ↓</a>
                 </div>
             </div>
@@ -819,6 +836,7 @@
         <div class="pestanyes" role="tablist" aria-label="Apartats">
             <a class="pestanya" role="tab" href="#comparador" data-vista="comparador">Comparador de ciutats</a>
             <a class="pestanya" role="tab" href="#riscos" data-vista="riscos">Riscos naturals</a>
+            <a class="pestanya" role="tab" href="#viajes" data-vista="viajes">Planificador de viajes</a>
         </div>
 
         <section id="comparador">
@@ -944,6 +962,33 @@
             </section>
         </section>
 
+        <section id="viajes" class="viajes-seccion">
+            <div class="wrap">
+                <div class="cap-seccio">
+                    <div>
+                        <div class="kicker">Explora con datos abiertos</div>
+                        <h2>Planifica tu viaje</h2>
+                    </div>
+                    <p class="descripcio-seccio">Crea una propuesta diaria con lugares de interés y previsión meteorológica del destino.</p>
+                </div>
+                <form id="trip-form" class="viajes-form">
+                    <label for="destination">Destino
+                        <input id="destination" name="destino" placeholder="Lisboa" required minlength="2">
+                    </label>
+                    <label for="days-count">Días
+                        <input id="days-count" name="dias" type="number" min="1" max="7" value="3" required>
+                    </label>
+                    <label for="start-date">Fecha de inicio
+                        <input id="start-date" name="fecha" type="date" required>
+                    </label>
+                    <button id="trip-submit" type="submit">Crear itinerario →</button>
+                </form>
+                <p id="viajes-estado" role="status" aria-live="polite"></p>
+                <div id="viajes-resultados" class="viajes-resultados" aria-label="Itinerario sugerido"></div>
+                <p id="viajes-fuentes" class="viajes-fuentes"></p>
+            </div>
+        </section>
+
         <section id="riscos">
             <div class="cap-seccio">
                 <div>
@@ -1020,5 +1065,6 @@
     <script src="https://unpkg.com/globe.gl"></script>
     <script src="mapa-globus.js" defer></script>
     <script src="riscos.js" defer></script>
+    <script src="viajes.js" defer></script>
 </body>
 </html>

@@ -23,6 +23,7 @@
     // ---------- Vistes: comparador / riscos ----------
 
     const seccioRiscos = document.querySelector("#riscos");
+    const seccioViatges = document.querySelector("#viajes");
     const seccionsComparador = [
         document.querySelector("#comparador"),
         document.querySelector("#resultats")
@@ -31,10 +32,12 @@
 
     function mostrarVista(vista) {
         const esRiscos = vista === "riscos";
+        const esViatges = vista === "viajes";
 
         seccioRiscos.classList.toggle("vista-oculta", !esRiscos);
+        seccioViatges.classList.toggle("vista-oculta", !esViatges);
         seccionsComparador.forEach(function (seccio) {
-            if (seccio) seccio.classList.toggle("vista-oculta", esRiscos);
+            if (seccio) seccio.classList.toggle("vista-oculta", esRiscos || esViatges);
         });
 
         pestanyes.forEach(function (pestanya) {
@@ -47,7 +50,7 @@
         if (!esRiscos) window.dispatchEvent(new Event("resize"));
     }
 
-    document.querySelectorAll('a[href="#comparador"], a[href="#riscos"]')
+    document.querySelectorAll('a[href="#comparador"], a[href="#riscos"], a[href="#viajes"]')
         .forEach(function (enllac) {
             enllac.addEventListener("click", function (event) {
                 event.preventDefault();
@@ -59,7 +62,10 @@
             });
         });
 
-    mostrarVista(location.hash === "#riscos" ? "riscos" : "comparador");
+    const vistaInicial = location.hash === "#riscos"
+        ? "riscos"
+        : location.hash === "#viajes" ? "viajes" : "comparador";
+    mostrarVista(vistaInicial);
 
     // ---------- Fotografies (Unsplash) ----------
 

@@ -7508,7 +7508,13 @@ import requests
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
+try:
+    from backend.viajes import router as viajes_router
+except ModuleNotFoundError:
+    from viajes import router as viajes_router
+
 app = FastAPI()
+app.include_router(viajes_router)
 
 app.add_middleware(
     CORSMiddleware,
