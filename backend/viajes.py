@@ -24,10 +24,25 @@ def consultar_json(url, *, params=None, servicio="servicio de datos"):
         respuesta = requests.get(url, params=params, timeout=20)
         respuesta.raise_for_status()
         return respuesta.json()
+    except requests.HTTPError as error:
+        respuesta = error.response
+        motivo = ""
+        if respuesta is not None:
+            try:
+                motivo = respuesta.json().get("reason", "")
+            except ValueError:
+                motivo = respuesta.text[:200]
+        codigo = respuesta.status_code if respuesta is not None else "desconocido"
+        logger.warning("%s devolvió HTTP %s: %s", servicio, codigo, motivo)
+        detalle = f"{servicio} devolvió HTTP {codigo}."
+        if motivo:
+            detalle += f" {motivo}"
+        raise HTTPException(status_code=502, detail=detalle) from error
     except requests.RequestException as error:
+        logger.warning("Error de conexión con %s: %s", servicio, error)
         raise HTTPException(
             status_code=502,
-            detail=f"No se pudo conectar con {servicio}. Inténtalo de nuevo más tarde.",
+            detail=f"No se pudo conectar con {servicio} ({type(error).__name__}). Inténtalo de nuevo más tarde.",
         ) from error
 
 
@@ -103,18 +118,25 @@ def planificar_viaje(
 
     ciudad = buscar_destino(destino.strip())
     latitud, longitud = ciudad["latitude"], ciudad["longitude"]
-    pronostico = consultar_json(
-        FORECAST_URL,
-        params={
-            "latitude": latitud,
-            "longitude": longitud,
-            "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
-            "timezone": ciudad.get("timezone", "auto"),
-            "forecast_days": min(16, (fecha - hoy).days + dias),
-        },
-        servicio="Open-Meteo Forecast",
-    ).get("daily", {})
     avisos = []
+    try:
+        pronostico = consultar_json(
+            FORECAST_URL,
+            params={
+                "latitude": latitud,
+                "longitude": longitud,
+                "daily": "weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+                "timezone": ciudad.get("timezone", "auto"),
+                "forecast_days": min(16, (fecha - hoy).days + dias),
+            },
+            servicio="Open-Meteo Forecast",
+        ).get("daily", {})
+    except HTTPException as error:
+        # Una caída puntual del pronóstico no impide devolver el itinerario.
+        logger.warning("El itinerario se generará sin previsión: %s", error.detail)
+        pronostico = {}
+        avisos.append(f"No se pudo cargar la previsión; el itinerario se muestra sin datos meteorológicos. {error.detail}")
+
     try:
         lugares = buscar_lugares(latitud, longitud)
     except HTTPException as error:

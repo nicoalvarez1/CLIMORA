@@ -7596,8 +7596,21 @@ def generar_conclusion_ia(ciutat_a, ciutat_b, poblacion_a, poblacion_b):
         if texto:
             return texto, None
         logging.warning("OpenAI no devolvió texto para la conclusión de comparación.")
+    except requests.HTTPError as error:
+        status = error.response.status_code if error.response is not None else 0
+        logging.warning("OpenAI rechazó la conclusión con HTTP %s.", status)
+        if status in (401, 403):
+            return None, "clave_invalida"
+        if status == 429:
+            return None, "limite_api"
+        if status == 404:
+            return None, "modelo_no_disponible"
+        if status == 400:
+            return None, "peticion_invalida"
+        return None, "ia_no_disponible"
     except requests.RequestException as error:
         logging.warning("No se pudo generar la conclusión con OpenAI: %s", error)
+        return None, "error_conexion"
     return None, "ia_no_disponible"
 @app.get("/comparar")
 def comparar(ciudad1: str, ciudad2: str):

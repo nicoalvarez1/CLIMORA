@@ -58,9 +58,7 @@ formulari.addEventListener("submit", async function (event) {
         resultats.classList.remove("hidden");
         missatge.textContent = dades.conclusion
             ? "Comparación completada con una conclusión generada por IA."
-            : dades.conclusion_ia_estado === "falta_clave"
-                ? "Comparación completada. Para activar la conclusión con IA, configura OPENAI_API_KEY en Render."
-                : "Comparación completada, pero la IA no está disponible ahora.";
+            : mensajeEstadoIA(dades.conclusion_ia_estado);
 
         resultats.scrollIntoView({
             behavior: "smooth",
@@ -176,6 +174,20 @@ function mostrarCiutats(llistaCiutats) {
 }
 
 
+function mensajeEstadoIA(estado) {
+    const mensajes = {
+        falta_clave: "Falta OPENAI_API_KEY en las variables de entorno del servicio en Render.",
+        clave_invalida: "OpenAI rechazó la clave. Revisa que OPENAI_API_KEY sea válida en Render.",
+        limite_api: "OpenAI rechazó la solicitud por límite o saldo de API. Revisa la facturación de la API.",
+        modelo_no_disponible: "El modelo configurado no está disponible para esta cuenta.",
+        peticion_invalida: "OpenAI rechazó la solicitud. Revisa la configuración del modelo.",
+        error_conexion: "El servidor no pudo conectar con OpenAI. Inténtalo de nuevo más tarde.",
+        ia_no_disponible: "OpenAI no pudo generar la conclusión. Revisa los registros del servicio en Render."
+    };
+    return mensajes[estado] || "El backend de Render no devuelve el estado de IA esperado. Despliega la versión más reciente.";
+}
+
+
 function mostrarComparacio(comparacio, llistaCiutats, conclusionIA, estadoIA) {
     cosTaula.innerHTML = "";
 
@@ -240,9 +252,7 @@ function mostrarComparacio(comparacio, llistaCiutats, conclusionIA, estadoIA) {
     }
 
     if (conclusio) {
-        conclusio.textContent = conclusionIA || (estadoIA === "falta_clave"
-            ? "La conclusión generada por IA aparecerá cuando se configure la clave de OpenAI en Render."
-            : "No se pudo generar la conclusión con IA en este momento. Vuelve a intentarlo.");
+        conclusio.textContent = conclusionIA || mensajeEstadoIA(estadoIA);
     }
 }
 
