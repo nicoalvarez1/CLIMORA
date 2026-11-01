@@ -1,6 +1,7 @@
 """API independiente para crear itinerarios con datos abiertos."""
 
 from datetime import date, timedelta
+import logging
 
 import requests
 from fastapi import APIRouter, HTTPException, Query
@@ -9,10 +10,15 @@ router = APIRouter()
 
 GEOCODING_URL = "https://geocoding-api.open-meteo.com/v1/search"
 FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
-OVERPASS_URL = "https://overpass-api.de/api/interpreter"
+OVERPASS_URLS = (
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+)
+USER_AGENT = "CLIMORA travel planner/1.0 (OpenStreetMap data client)"
+logger = logging.getLogger(__name__)
 
 
-def consultar_json(url, *, params=None):
+def consultar_json(url, *, params=None, servicio="servicio de datos"):
     """Consulta un servicio externo y traduce sus errores a una respuesta clara."""
     try:
         respuesta = requests.get(url, params=params, timeout=20)
@@ -21,7 +27,7 @@ def consultar_json(url, *, params=None):
     except requests.RequestException as error:
         raise HTTPException(
             status_code=502,
-            detail="No se pudo conectar con uno de los servicios de datos abiertos.",
+            detail=f"No se pudo conectar con {servicio}. Inténtalo de nuevo más tarde.",
         ) from error
 
 
@@ -29,6 +35,7 @@ def buscar_destino(nombre):
     datos = consultar_json(
         GEOCODING_URL,
         params={"name": nombre, "count": 1, "language": "es", "format": "json"},
+        servicio="Open-Meteo Geocoding",
     )
     resultados = datos.get("results", [])
     if not resultados:
@@ -43,7 +50,27 @@ def buscar_lugares(latitud, longitud):
      node(around:5000,{latitud},{longitud})[historic];
      way(around:5000,{latitud},{longitud})[historic];);
     out center tags 30;"""
-    datos = consultar_json(OVERPASS_URL, params={"data": consulta})
+    datos = None
+    ultimo_error = None
+    for url in OVERPASS_URLS:
+        try:
+            respuesta = requests.get(
+                url,
+                params={"data": consulta},
+                headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
+                timeout=20,
+            )
+            respuesta.raise_for_status()
+            datos = respuesta.json()
+            break
+        except requests.RequestException as error:
+            ultimo_error = error
+
+    if datos is None:
+        raise HTTPException(
+            status_code=502,
+            detail="OpenStreetMap no está disponible temporalmente.",
+        ) from ultimo_error
     lugares = []
     vistos = set()
     for elemento in datos.get("elements", []):
@@ -85,9 +112,19 @@ def planificar_viaje(
             "timezone": ciudad.get("timezone", "auto"),
             "forecast_days": min(16, (fecha - hoy).days + dias),
         },
+        servicio="Open-Meteo Forecast",
     ).get("daily", {})
-    lugares = buscar_lugares(latitud, longitud)
+    avisos = []
+    try:
+        lugares = buscar_lugares(latitud, longitud)
+    except HTTPException as error:
+        logger.warning("No se pudieron consultar lugares de OpenStreetMap: %s", error.detail)
+        lugares = []
+        avisos.append("OpenStreetMap no está disponible ahora; se muestra una sugerencia general para el centro.")
+    lugares_reales = len(lugares)
     if not lugares:
+        if not avisos:
+            avisos.append("No se encontraron lugares etiquetados en OpenStreetMap; se muestra una sugerencia general para el centro.")
         lugares = [{"nombre": "Paseo por el centro", "tipo": "Sugerencia", "latitud": latitud, "longitud": longitud}]
 
     itinerario = []
@@ -109,6 +146,7 @@ def planificar_viaje(
         "destino": ciudad.get("name", destino),
         "pais": ciudad.get("country", ""),
         "itinerario": itinerario,
-        "lugares_disponibles": len(lugares),
-        "fuentes": ["Open-Meteo Geocoding y Forecast", "OpenStreetMap (Overpass API)"],
+        "lugares_disponibles": lugares_reales,
+        "fuentes": ["Open-Meteo Geocoding y Forecast"] + (["OpenStreetMap (Overpass API)"] if lugares_reales else []),
+        "avisos": avisos,
     }

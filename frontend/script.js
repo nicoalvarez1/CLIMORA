@@ -53,10 +53,14 @@ formulari.addEventListener("submit", async function (event) {
         }
 
         mostrarCiutats(dades.ciudades);
-        mostrarComparacio(dades.comparacion, dades.ciudades);
+        mostrarComparacio(dades.comparacion, dades.ciudades, dades.conclusion, dades.conclusion_ia_estado);
 
         resultats.classList.remove("hidden");
-        missatge.textContent = "Comparació completada correctament.";
+        missatge.textContent = dades.conclusion
+            ? "Comparación completada con una conclusión generada por IA."
+            : dades.conclusion_ia_estado === "falta_clave"
+                ? "Comparación completada. Para activar la conclusión con IA, configura OPENAI_API_KEY en Render."
+                : "Comparación completada, pero la IA no está disponible ahora.";
 
         resultats.scrollIntoView({
             behavior: "smooth",
@@ -172,7 +176,7 @@ function mostrarCiutats(llistaCiutats) {
 }
 
 
-function mostrarComparacio(comparacio, llistaCiutats) {
+function mostrarComparacio(comparacio, llistaCiutats, conclusionIA, estadoIA) {
     cosTaula.innerHTML = "";
 
     const nom1 = obtenirNomCiutat(llistaCiutats[0], 0);
@@ -236,10 +240,9 @@ function mostrarComparacio(comparacio, llistaCiutats) {
     }
 
     if (conclusio) {
-        conclusio.textContent =
-            "La comparació permet observar les diferències entre " +
-            nom1 + " i " + nom2 +
-            ". Les conclusions depenen de les dades disponibles.";
+        conclusio.textContent = conclusionIA || (estadoIA === "falta_clave"
+            ? "La conclusión generada por IA aparecerá cuando se configure la clave de OpenAI en Render."
+            : "No se pudo generar la conclusión con IA en este momento. Vuelve a intentarlo.");
     }
 }
 

@@ -50,7 +50,7 @@ form.addEventListener("submit", async (event) => {
             card.append(weather);
             results.append(card);
         });
-        statusText.textContent = `${data.destino}, ${data.pais} · ${data.lugares_disponibles} lugares encontrados.`;
+        statusText.textContent = `${data.destino}, ${data.pais} · ${data.lugares_disponibles} lugares encontrados.${data.avisos?.length ? " " + data.avisos.join(" ") : ""}`;
         document.querySelector("#viajes-fuentes").textContent = `Fuentes: ${data.fuentes.join(" · ")}. Los lugares y la previsión pueden cambiar.`;
     } catch (error) {
         statusText.textContent = error.message.includes("Failed to fetch")

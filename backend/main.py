@@ -7503,6 +7503,9 @@ cities = [
 ]
 
 import fastapi as FastAPI
+import json
+import logging
+import os
 import requests
 
 from fastapi import FastAPI, HTTPException
@@ -7550,6 +7553,52 @@ def preparar_ciutat(ciutat):
     }
 
 
+def generar_conclusion_ia(ciutat_a, ciutat_b, poblacion_a, poblacion_b):
+    """Genera una conclusión basada solo en los indicadores comparados."""
+    clave = os.getenv("OPENAI_API_KEY")
+    if not clave:
+        return None, "falta_clave"
+
+    datos = {
+        "ciudad_1": ciutat_a,
+        "ciudad_2": ciutat_b,
+        "poblacion_ciudad_1": poblacion_a,
+        "poblacion_ciudad_2": poblacion_b,
+    }
+    try:
+        respuesta = requests.post(
+            "https://api.openai.com/v1/responses",
+            headers={"Authorization": f"Bearer {clave}"},
+            json={
+                "model": os.getenv("OPENAI_MODEL", "gpt-5.5"),
+                "instructions": (
+                    "Escribe en español una conclusión clara de 2 o 3 frases para una web de clima. "
+                    "Compara las dos ciudades usando únicamente los datos proporcionados. "
+                    "Menciona diferencias concretas de temperatura, lluvia, sol o humedad cuando existan. "
+                    "No inventes explicaciones, causas ni datos, y no declares una ciudad mejor que la otra. "
+                    "Los indicadores anuales son aproximados. Devuelve solo el texto de la conclusión."
+                ),
+                "input": json.dumps(datos, ensure_ascii=False),
+                "max_output_tokens": 180,
+                "store": False,
+            },
+            timeout=25,
+        )
+        respuesta.raise_for_status()
+        contenido = respuesta.json()
+        texto = " ".join(
+            pieza.get("text", "")
+            for elemento in contenido.get("output", [])
+            if elemento.get("type") == "message"
+            for pieza in elemento.get("content", [])
+            if pieza.get("type") == "output_text"
+        ).strip()
+        if texto:
+            return texto, None
+        logging.warning("OpenAI no devolvió texto para la conclusión de comparación.")
+    except requests.RequestException as error:
+        logging.warning("No se pudo generar la conclusión con OpenAI: %s", error)
+    return None, "ia_no_disponible"
 @app.get("/comparar")
 def comparar(ciudad1: str, ciudad2: str):
     primera = buscar_ciutat(ciudad1)
@@ -7609,15 +7658,15 @@ def comparar(ciudad1: str, ciudad2: str):
         }
     ]
 
-    conclusion = (
-        f'{ciutat_a["nombre"]} té clima {ciutat_a["descripcion"]}. '
-        f'{ciutat_b["nombre"]} té clima {ciutat_b["descripcion"]}.'
+    conclusion_ia, conclusion_ia_estado = generar_conclusion_ia(
+        ciutat_a, ciutat_b, primera["population"], segona["population"]
     )
 
     return {
         "ciudades": [ciutat_a, ciutat_b],
         "comparacion": comparacion,
-        "conclusion": conclusion
+        "conclusion": conclusion_ia,
+        "conclusion_ia_estado": conclusion_ia_estado,
     }
 
 @app.get("/ciutats")
