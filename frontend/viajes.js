@@ -4,19 +4,30 @@ const API_BASE = (location.protocol === "file:" || location.port === "5500")
     : location.origin;
 const form = document.querySelector("#trip-form");
 const dateInput = document.querySelector("#start-date");
+const daysInput = document.querySelector("#days-count");
 const statusText = document.querySelector("#viajes-estado");
 const results = document.querySelector("#viajes-resultados");
 const button = document.querySelector("#trip-submit");
 
-// La previsión consultada está disponible desde hoy hasta 15 días adelante.
+// MET Norway ofrece previsión para 9 días; ajustamos la última fecha al viaje.
 const today = new Date();
 const localDate = new Date(today.getTime() - today.getTimezoneOffset() * 60000)
     .toISOString().slice(0, 10);
-if (form && dateInput && statusText && results && button) {
+if (form && dateInput && daysInput && statusText && results && button) {
     dateInput.min = localDate;
-    dateInput.max = new Date(today.getTime() - today.getTimezoneOffset() * 60000 + 15 * 86400000)
-        .toISOString().slice(0, 10);
     dateInput.value = localDate;
+
+    function actualizarFechaMaxima() {
+        const dias = Math.min(7, Math.max(1, Number(daysInput.value) || 1));
+        const ultimoInicio = new Date(
+            today.getTime() - today.getTimezoneOffset() * 60000 + (9 - dias) * 86400000
+        ).toISOString().slice(0, 10);
+        dateInput.max = ultimoInicio;
+        if (dateInput.value > ultimoInicio) dateInput.value = ultimoInicio;
+    }
+
+    actualizarFechaMaxima();
+    daysInput.addEventListener("input", actualizarFechaMaxima);
 
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
