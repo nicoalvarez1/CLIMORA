@@ -25,6 +25,36 @@ logger = logging.getLogger(__name__)
 CACHE = {}
 CACHE_LOCK = Lock()
 
+TIPUS_LLOCS_CATALA = {
+    "attraction": "Lloc d'interès",
+    "museum": "Museu",
+    "viewpoint": "Mirador",
+    "artwork": "Obra d'art",
+    "zoo": "Zoo",
+    "gallery": "Galeria",
+    "theme_park": "Parc temàtic",
+    "aquarium": "Aquari",
+    "monument": "Monument",
+    "information": "Punt d'informació",
+    "historic": "Lloc històric",
+    "castle": "Castell",
+    "memorial": "Memorial",
+    "archaeological_site": "Jaciment arqueològic",
+    "church": "Església",
+    "ruins": "Ruïnes",
+    "fort": "Fortificació",
+    "battlefield": "Camp de batalla",
+    "monastery": "Monestir",
+    "manor": "Casa senyorial",
+}
+
+
+def traduir_tipus_lloc(tipus):
+    clau = tipus.casefold()
+    if clau in TIPUS_LLOCS_CATALA:
+        return TIPUS_LLOCS_CATALA[clau]
+    return "Lloc d'interès"
+
 
 def obtener_con_cache(clave, segundos, cargar):
     """Reutiliza una respuesta reciente para no consultar la API en cada clic."""
@@ -51,16 +81,16 @@ def consultar_json(url, *, params=None, servicio="servicio de datos", headers=No
     except requests.HTTPError as error:
         respuesta = error.response
         codigo = respuesta.status_code if respuesta is not None else "desconocido"
-        logger.warning("%s devolvió HTTP %s", servicio, codigo)
+        logger.warning("%s ha respost amb l'error HTTP %s", servicio, codigo)
         raise HTTPException(
             status_code=502,
-            detail=f"{servicio} devolvió HTTP {codigo}.",
+            detail=f"{servicio} ha respost amb l'error HTTP {codigo}.",
         ) from error
     except requests.RequestException as error:
         logger.warning("Error de conexión con %s: %s", servicio, error)
         raise HTTPException(
             status_code=502,
-            detail=f"No se pudo conectar con {servicio} ({type(error).__name__}).",
+            detail=f"No s'ha pogut connectar amb {servicio} ({type(error).__name__}).",
         ) from error
 
 
@@ -69,19 +99,19 @@ def buscar_destino(nombre):
     def cargar():
         datos = consultar_json(
             GEOCODING_URL,
-            params={"name": nombre, "count": 1, "language": "es", "format": "json"},
+            params={"name": nombre, "count": 1, "language": "ca", "format": "json"},
             servicio="Open-Meteo Geocoding",
         )
         resultados = datos.get("results", [])
         if not resultados:
-            raise HTTPException(status_code=404, detail="No se encontró ese destino.")
+            raise HTTPException(status_code=404, detail="No s'ha trobat aquesta destinació.")
         return resultados[0]
 
     return obtener_con_cache(("destino", nombre.casefold()), 30 * 86400, cargar)
 
 
 def buscar_lugares_photon(latitud, longitud):
-    """Busca lugares turísticos de OpenStreetMap próximos a las coordenadas."""
+    """Cerca llocs d'interès d'OpenStreetMap a prop de les coordenades."""
     datos = consultar_json(
         PHOTON_URL,
         params={
@@ -90,7 +120,7 @@ def buscar_lugares_photon(latitud, longitud):
             "radius": 5,
             "osm_tag": "tourism",
             "limit": 20,
-            "lang": "en",
+            "lang": "ca",
         },
         servicio="OpenStreetMap Photon",
         headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
@@ -112,7 +142,7 @@ def buscar_lugares_photon(latitud, longitud):
         coordenadas = elemento.get("geometry", {}).get("coordinates", [longitud, latitud])
         lugares.append({
             "nombre": nombre,
-            "tipo": tipo.replace("_", " ").capitalize(),
+            "tipo": traduir_tipus_lloc(tipo),
             "latitud": coordenadas[1],
             "longitud": coordenadas[0],
         })
@@ -120,7 +150,7 @@ def buscar_lugares_photon(latitud, longitud):
 
 
 def buscar_lugares_overpass(latitud, longitud):
-    """Consulta una instancia Overpass como alternativa a Photon."""
+    """Consulta una instància d'Overpass com a alternativa a Photon."""
     consulta = f"""[out:json][timeout:10];
     (nwr(around:3000,{latitud},{longitud})[tourism~\"^(attraction|museum|viewpoint|artwork|zoo|gallery)$\"][name];
      nwr(around:3000,{latitud},{longitud})[historic][name];);
@@ -147,7 +177,7 @@ def buscar_lugares_overpass(latitud, longitud):
                 centro = elemento.get("center", {})
                 lugares.append({
                     "nombre": nombre,
-                    "tipo": (etiquetas.get("tourism") or etiquetas.get("historic") or "Lugar de interés").replace("_", " ").capitalize(),
+                    "tipo": traduir_tipus_lloc(etiquetas.get("tourism") or etiquetas.get("historic") or "Lloc d'interès"),
                     "latitud": elemento.get("lat", centro.get("lat", latitud)),
                     "longitud": elemento.get("lon", centro.get("lon", longitud)),
                 })
@@ -158,12 +188,12 @@ def buscar_lugares_overpass(latitud, longitud):
 
     raise HTTPException(
         status_code=502,
-        detail="Los servicios públicos de lugares no respondieron.",
+        detail="Els serveis públics de llocs d'interès no han respost.",
     ) from ultimo_error
 
 
 def buscar_lugares(latitud, longitud):
-    """Usa Photon primero y Overpass como respaldo; conserva el resultado 24 h."""
+    """Fa servir Photon i, si no respon, Overpass; desa el resultat durant 24 h."""
     clave = ("lugares", round(latitud, 3), round(longitud, 3))
 
     def cargar():
@@ -181,7 +211,7 @@ def buscar_lugares(latitud, longitud):
 
 
 def obtener_pronostico(latitud, longitud):
-    """Consulta MET Norway y reutiliza la previsión durante tres horas."""
+    """Consulta MET Norway i reutilitza la previsió durant tres hores."""
     clave = ("pronostico", round(latitud, 3), round(longitud, 3))
 
     def cargar():
@@ -196,7 +226,7 @@ def obtener_pronostico(latitud, longitud):
 
 
 def pronostico_por_dia(datos, zona_horaria, fechas):
-    """Agrupa temperaturas horarias y probabilidad de lluvia por día local."""
+    """Agrupa temperatures horàries i probabilitat de pluja per dia local."""
     try:
         zona = ZoneInfo(zona_horaria)
     except ZoneInfoNotFoundError:
@@ -239,12 +269,12 @@ def planificar_viaje(
     dias: int = Query(default=3, ge=1, le=7),
     fecha: date = Query(default_factory=date.today),
 ):
-    """Devuelve un lugar por día y el pronóstico cuando está disponible."""
+    """Retorna un lloc per dia i la previsió quan està disponible."""
     hoy = date.today()
     if fecha < hoy:
-        raise HTTPException(status_code=400, detail="La fecha de inicio no puede estar en el pasado.")
+        raise HTTPException(status_code=400, detail="La data d'inici no pot ser anterior a avui.")
     if fecha + timedelta(days=dias - 1) > hoy + timedelta(days=8):
-        raise HTTPException(status_code=400, detail="El pronóstico llega a 9 días. Acorta el viaje o elige una fecha más cercana.")
+        raise HTTPException(status_code=400, detail="La previsió arriba fins a 9 dies. Escurça el viatge o tria una data més propera.")
 
     ciudad = buscar_destino(destino.strip())
     latitud, longitud = ciudad["latitude"], ciudad["longitude"]
@@ -258,23 +288,23 @@ def planificar_viaje(
             fechas,
         )
     except HTTPException as error:
-        logger.warning("No se pudo cargar la previsión de MET Norway: %s", error.detail)
+        logger.warning("No s'ha pogut carregar la previsió de MET Norway: %s", error.detail)
         pronostico = {}
-        avisos.append("La previsión meteorológica no está disponible ahora; el itinerario seguirá mostrándose sin ella.")
+        avisos.append("La previsió meteorològica no està disponible ara; l'itinerari es mostrarà sense aquesta informació.")
 
     try:
         resultado_lugares = buscar_lugares(latitud, longitud)
         lugares = resultado_lugares["lugares"]
         fuente_lugares = resultado_lugares["fuente"]
     except HTTPException as error:
-        logger.warning("No se pudieron consultar lugares de OpenStreetMap: %s", error.detail)
+        logger.warning("No s'han pogut consultar llocs d'OpenStreetMap: %s", error.detail)
         lugares = []
         fuente_lugares = None
-        avisos.append("No se pudieron cargar lugares cercanos; se ha añadido una sugerencia para explorar el centro.")
+        avisos.append("No s'han pogut carregar llocs propers; hem afegit un suggeriment per explorar el centre.")
 
     lugares_reales = len(lugares)
     if not lugares:
-        lugares = [{"nombre": "Paseo por el centro", "tipo": "Sugerencia", "latitud": latitud, "longitud": longitud}]
+        lugares = [{"nombre": "Passeig pel centre", "tipo": "Suggeriment", "latitud": latitud, "longitud": longitud}]
 
     itinerario = []
     for indice, dia_texto in enumerate(fechas):

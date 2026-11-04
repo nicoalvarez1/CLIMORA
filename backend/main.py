@@ -17027,6 +17027,208 @@ app.add_middleware(
 )
 
 
+
+# Noms visibles traduïts al català per mantenir la interfície coherent.
+PAISOS_CATALA = dict(item.split("|", 1) for item in """
+afghanistan|Afganistan
+albania|Albània
+algeria|Algèria
+angola|Angola
+argentina|Argentina
+armenia|Armènia
+australia|Austràlia
+austria|Àustria
+azerbaijan|Azerbaidjan
+bahamas|les Bahames
+bahrain|Bahrain
+bangladesh|Bangla Desh
+belarus|Belarús
+belgium|Bèlgica
+benin|Benín
+bolivia|Bolívia
+bosnia and herzegovina|Bòsnia i Hercegovina
+botswana|Botswana
+brazil|Brasil
+brunei|Brunei
+bulgaria|Bulgària
+burkina faso|Burkina Faso
+burundi|Burundi
+cambodia|Cambodja
+cameroon|el Camerun
+canada|el Canadà
+central african republic|la República Centreafricana
+chad|el Txad
+chile|Xile
+china|la Xina
+colombia|Colòmbia
+costa rica|Costa Rica
+croatia|Croàcia
+cuba|Cuba
+czechia|Txèquia
+czech republic|la República Txeca
+denmark|Dinamarca
+djibouti|Djibouti
+dominican republic|la República Dominicana
+dr congo|la República Democràtica del Congo
+democratic republic of the congo|la República Democràtica del Congo
+republic of the congo|la República del Congo
+ecuador|l'Equador
+egypt|Egipte
+el salvador|El Salvador
+equatorial guinea|Guinea Equatorial
+eritrea|Eritrea
+estonia|Estònia
+ethiopia|Etiòpia
+fiji|Fiji
+finland|Finlàndia
+france|França
+fran�a|França
+gabon|el Gabon
+gambia|Gàmbia
+georgia|Geòrgia
+germany|Alemanya
+ghana|Ghana
+greece|Grècia
+guatemala|Guatemala
+guinea|Guinea
+guyana|Guyana
+haiti|Haití
+honduras|Hondures
+hong kong|Hong Kong
+hungary|Hongria
+iceland|Islàndia
+india|l'Índia
+indonesia|Indonèsia
+iran|l'Iran
+iraq|l'Iraq
+ireland|Irlanda
+israel|Israel
+italy|Itàlia
+ivory coast|la Costa d'Ivori
+jamaica|Jamaica
+japan|el Japó
+jordan|Jordània
+kazakhstan|el Kazakhstan
+kenya|Kenya
+kuwait|Kuwait
+kyrgyzstan|el Kirguizistan
+laos|Laos
+latvia|Letònia
+lebanon|el Líban
+liberia|Libèria
+libya|Líbia
+lithuania|Lituània
+madagascar|Madagascar
+malawi|Malawi
+malaysia|Malàisia
+mali|Mali
+mauritania|Mauritània
+mauritius|Maurici
+mexico|Mèxic
+moldova|Moldàvia
+mongolia|Mongòlia
+morocco|el Marroc
+mozambique|Moçambic
+myanmar|Myanmar
+namibia|Namíbia
+nepal|Nepal
+netherlands|els Països Baixos
+the netherlands|els Països Baixos
+new zealand|Nova Zelanda
+nicaragua|Nicaragua
+niger|el Níger
+nigeria|Nigèria
+north korea|Corea del Nord
+north macedonia|Macedònia del Nord
+norway|Noruega
+oman|Oman
+pakistan|el Pakistan
+panama|Panamà
+papua new guinea|Papua Nova Guinea
+paraguay|el Paraguai
+peru|el Perú
+philippines|les Filipines
+poland|Polònia
+portugal|Portugal
+puerto rico|Puerto Rico
+qatar|Qatar
+romania|Romania
+russia|Rússia
+rwanda|Ruanda
+saudi arabia|l'Aràbia Saudita
+senegal|el Senegal
+serbia|Sèrbia
+sierra leone|Sierra Leone
+singapore|Singapur
+slovakia|Eslovàquia
+slovenia|Eslovènia
+somalia|Somàlia
+south africa|Sud-àfrica
+south korea|Corea del Sud
+south sudan|el Sudan del Sud
+spain|Espanya
+sri lanka|Sri Lanka
+sudan|el Sudan
+suriname|Surinam
+sweden|Suècia
+switzerland|Suïssa
+syria|Síria
+taiwan|Taiwan
+tajikistan|el Tadjikistan
+tanzania|Tanzània
+thailand|Tailàndia
+togo|Togo
+tunisia|Tunísia
+turkey|Turquia
+turkmenistan|el Turkmenistan
+uganda|Uganda
+ukraine|Ucraïna
+united arab emirates|els Emirats Àrabs Units
+united kingdom|el Regne Unit
+united states|els Estats Units
+uruguay|l'Uruguai
+uzbekistan|l'Uzbekistan
+venezuela|Veneçuela
+vietnam|el Vietnam
+yemen|el Iemen
+zambia|Zàmbia
+zimbabwe|Zimbabwe
+""".strip().splitlines())
+PAISOS_CATALA["fran\u00e7a"] = "França"
+PAISOS_CATALA["macao"] = "Macau"
+
+CLIMES_CATALA = dict(item.split("|", 1) for item in """
+cold desert|desert fred
+cold semi-arid|semiàrid fred
+hot desert|desert càlid
+hot semi-arid|semiàrid càlid
+hot-summer humid continental|continental humit d'estiu càlid
+hot-summer mediterranean|mediterrani d'estiu càlid
+humid subtropical|subtropical humit
+monsoon-influenced humid continental|continental humit influït pel monsó
+monsoon-influenced humid subtropical|subtropical humit influït pel monsó
+monsoon-influenced subarctic|subàrtic influït pel monsó
+monsoon-influenced warm-summer humid continental|continental humit d'estiu temperat influït pel monsó
+oceanic|oceànic
+subarctic|subàrtic
+subpolar oceanic|oceànic subpolar
+subtropical highland|subtropical d'altitud
+tropical monsoon|monsònic tropical
+tropical rainforest|selva tropical
+tropical savanna|sabana tropical
+tropical savanna (dry summer)|sabana tropical d'estiu sec
+warm-summer humid continental|continental humit d'estiu temperat
+warm-summer mediterranean|mediterrani d'estiu temperat
+""".strip().splitlines())
+
+
+def nom_pais_ca(pais):
+    return PAISOS_CATALA.get(pais.casefold(), pais.title())
+
+
+def nom_clima_ca(clima):
+    return CLIMES_CATALA.get(clima.casefold(), clima)
+
 def buscar_ciutat(nom):
     nom = nom.strip().casefold()
 
@@ -17040,8 +17242,8 @@ def buscar_ciutat(nom):
 def preparar_ciutat(ciutat):
     return {
         "nombre": ciutat["name"].title(),
-        "pais": ciutat["country"].title(),
-        "descripcion": ciutat["climate_type"],
+        "pais": nom_pais_ca(ciutat["country"]),
+        "descripcion": nom_clima_ca(ciutat["climate_type"]),
         "poblacion_millones": round(
             ciutat["population"] / 1_000_000, 2
         ),
@@ -17072,11 +17274,11 @@ def generar_conclusion_ia(ciutat_a, ciutat_b, poblacion_a, poblacion_b):
             json={
                 "model": os.getenv("OPENAI_MODEL", "gpt-5.5"),
                 "instructions": (
-                    "Escribe en español una conclusión clara de 2 o 3 frases para una web de clima. "
-                    "Compara las dos ciudades usando únicamente los datos proporcionados. "
-                    "Menciona diferencias concretas de temperatura, lluvia, sol o humedad cuando existan. "
-                    "No inventes explicaciones, causas ni datos, y no declares una ciudad mejor que la otra. "
-                    "Los indicadores anuales son aproximados. Devuelve solo el texto de la conclusión."
+                    "Escriu en català una conclusió clara de 2 o 3 frases per a una web de clima. "
+                    "Compara les dues ciutats fent servir únicament les dades proporcionades. "
+                    "Esmenta diferències concretes de temperatura, pluja, hores de sol o humitat quan n'hi hagi. "
+                    "No inventis explicacions, causes ni dades, i no diguis que una ciutat és millor que l'altra. "
+                    "Els indicadors anuals són aproximats. Retorna només el text de la conclusió."
                 ),
                 "input": json.dumps(datos, ensure_ascii=False),
                 "max_output_tokens": 180,
@@ -17187,7 +17389,7 @@ def llistar_ciutats():
     return [
         {
             "name": c["name"].title(),
-            "country": c["country"].title(),
+            "country": nom_pais_ca(c["country"]),
             "lat": c["latitude"],
             "lng": c["longitude"],
         }

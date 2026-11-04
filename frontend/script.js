@@ -57,7 +57,7 @@ formulari.addEventListener("submit", async function (event) {
 
         resultats.classList.remove("hidden");
         missatge.textContent = dades.conclusion
-            ? "Comparación completada con una conclusión generada por IA."
+            ? "Comparació completada amb una conclusió generada per IA."
             : mensajeEstadoIA(dades.conclusion_ia_estado);
 
         resultats.scrollIntoView({
@@ -72,7 +72,7 @@ formulari.addEventListener("submit", async function (event) {
     } finally {
         boto.disabled = false;
         boto.innerHTML =
-            'Comparar ciutats <span class="button-arrow" aria-hidden="true">→</span>';
+            'Compara les ciutats <span class="button-arrow" aria-hidden="true">→</span>';
     }
 });
 
@@ -176,15 +176,15 @@ function mostrarCiutats(llistaCiutats) {
 
 function mensajeEstadoIA(estado) {
     const mensajes = {
-        falta_clave: "Falta OPENAI_API_KEY en las variables de entorno del servicio en Render.",
-        clave_invalida: "OpenAI rechazó la clave. Revisa que OPENAI_API_KEY sea válida en Render.",
-        limite_api: "OpenAI rechazó la solicitud por límite o saldo de API. Revisa la facturación de la API.",
-        modelo_no_disponible: "El modelo configurado no está disponible para esta cuenta.",
-        peticion_invalida: "OpenAI rechazó la solicitud. Revisa la configuración del modelo.",
-        error_conexion: "El servidor no pudo conectar con OpenAI. Inténtalo de nuevo más tarde.",
-        ia_no_disponible: "OpenAI no pudo generar la conclusión. Revisa los registros del servicio en Render."
+        falta_clave: "Falta OPENAI_API_KEY a les variables d'entorn del servei de Render.",
+        clave_invalida: "OpenAI ha rebutjat la clau. Comprova que OPENAI_API_KEY sigui vàlida a Render.",
+        limite_api: "OpenAI ha rebutjat la petició per límit o saldo de l'API. Revisa la facturació de l'API.",
+        modelo_no_disponible: "El model configurat no està disponible per a aquest compte.",
+        peticion_invalida: "OpenAI ha rebutjat la petició. Revisa la configuració del model.",
+        error_conexion: "El servidor no s'ha pogut connectar amb OpenAI. Torna-ho a provar més tard.",
+        ia_no_disponible: "OpenAI no ha pogut generar la conclusió. Revisa els registres del servei a Render."
     };
-    return mensajes[estado] || "El backend de Render no devuelve el estado de IA esperado. Despliega la versión más reciente.";
+    return mensajes[estado] || "El servidor de Render no ha retornat l'estat esperat de la IA. Desplega'n la versió més recent.";
 }
 
 
@@ -205,6 +205,7 @@ function mostrarComparacio(comparacio, llistaCiutats, conclusionIA, estadoIA) {
                 const claus = Object.keys(filaDada);
                 const etiqueta =
                     filaDada.indicador ??
+                    filaDada.caracteristica ??
                     filaDada.nombre ??
                     filaDada.nom ??
                     filaDada.name ??
@@ -270,6 +271,20 @@ function afegirCelda(fila, valor, esCapcalera = false) {
 
 
 function formatarNom(nom) {
+    const etiquetes = {
+        descripcion: "Descripció",
+        pais: "País",
+        poblacion_millones: "Població (milions)",
+        temperatura_media: "Temperatura mitjana",
+        precipitacion_mm: "Precipitació anual (mm)",
+        horas_sol: "Hores de sol anuals",
+        humedad: "Humitat",
+        climate_period: "Període climàtic",
+        climate_source: "Font climàtica",
+        climate_distance_km: "Distància a la ciutat de referència (km)",
+        climate_classification_method: "Mètode de classificació climàtica"
+    };
+    if (etiquetes[nom]) return etiquetes[nom];
     return String(nom)
         .replace(/_/g, " ")
         .replace(/([a-zà-ÿ])([A-ZÀ-Ý])/g, "$1 $2")

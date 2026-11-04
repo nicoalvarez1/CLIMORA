@@ -121,7 +121,7 @@
 
             panellTop.classList.remove("hidden");
             panellTop.innerHTML = "";
-            panellTop.appendChild(crear("p", "risc-top-estat", "Carregant el rànquing..."));
+            panellTop.appendChild(crear("p", "risc-top-estat", "Carregant la classificació..."));
 
             try {
                 const url = new URL(API_RISCOS + "/top");
@@ -142,8 +142,8 @@
                 const cap = crear("div", "risc-top-cap");
                 const titols = crear("div");
                 titols.append(
-                    crear("div", "kicker", "Top 10 de països"),
-                    crear("h3", "", dades.tipus + ": països amb més risc")
+                    crear("div", "kicker", "10 països amb més risc"),
+                    crear("h3", "", dades.tipus + ": països més exposats")
                 );
 
                 const tancar = crear("button", "risc-top-tancar", "Tancar ✕");
@@ -189,10 +189,10 @@
                 panellTop.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
             } catch (error) {
-                console.error("Error carregant el top de països:", error);
+                console.error("Error en carregar els països més exposats:", error);
                 panellTop.innerHTML = "";
                 panellTop.appendChild(crear("p", "risc-top-estat",
-                    "No s'ha pogut carregar el rànquing. Comprova que el servidor està engegat amb l'última versió de riscos.py."));
+                    "No s'ha pogut carregar la classificació. Comprova que el servidor estigui engegat amb l'última versió de riscos.py."));
             }
         }
 
@@ -200,12 +200,12 @@
             const boto = crear("button", "risc-foto");
             boto.type = "button";
             boto.setAttribute("aria-pressed", "false");
-            boto.title = "Veure els 10 països amb més risc";
+            boto.title = "Mostra els 10 països amb més risc";
             posarFoto(boto, tipus);
 
             boto.append(
                 crear("span", "risc-foto-nom", tipus),
-                crear("span", "risc-foto-accio", "Top 10 països →")
+                crear("span", "risc-foto-accio", "10 països amb més risc →")
             );
 
             boto.addEventListener("click", function () {
@@ -231,7 +231,7 @@
             crear("h3", "", dades.ciutat + ", " + dades.pais),
             crear("p", "",
                 "Risc global " + dades.nivell_global.toLowerCase() +
-                ". El risc principal són: " + dades.risc_principal.toLowerCase() +
+                ". El risc principal és: " + dades.risc_principal.toLowerCase() +
                 ". Clima: " + dades.clima + ".")
         );
 
@@ -292,7 +292,7 @@
 
             if (resposta.status === 404) {
                 missatge.textContent =
-                    "No tenim dades de «" + ciutat + "». Prova amb el nom en anglès.";
+                    "No tenim dades de «" + ciutat + "». Prova d'escriure el nom tal com apareix al globus.";
                 return;
             }
 
@@ -312,7 +312,7 @@
                 "No s'ha pogut fer l'anàlisi. Comprova que el servidor està engegat amb riscos.py.";
         } finally {
             boto.disabled = false;
-            boto.textContent = "Analitzar riscos →";
+            boto.textContent = "Analitza els riscos →";
         }
     });
 })();

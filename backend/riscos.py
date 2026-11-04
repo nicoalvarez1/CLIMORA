@@ -14,6 +14,8 @@ from fastapi import HTTPException
 app = antic.app
 cities = antic.cities
 buscar_ciutat = antic.buscar_ciutat
+nom_pais_ca = antic.nom_pais_ca
+nom_clima_ca = antic.nom_clima_ca
 
 
 # ---------------------------------------------------------------------------
@@ -311,8 +313,8 @@ def analitzar_riscos(ciutat):
 
     return {
         "ciutat": ciutat["name"].title(),
-        "pais": ciutat["country"].title(),
-        "clima": ciutat["climate_type"],
+        "pais": nom_pais_ca(ciutat["country"]),
+        "clima": nom_clima_ca(ciutat["climate_type"]),
         "index_global": index_global,
         "nivell_global": nivell(index_global),
         "risc_principal": riscos[0]["tipus"],
@@ -374,7 +376,7 @@ def top_paisos(tipus: str):
         pitjor = max(valors)
 
         classificacio.append({
-            "pais": pais.title(),
+            "pais": nom_pais_ca(pais),
             "puntuacio": limitar(mitjana),
             "nivell": nivell(mitjana),
             "ciutats": len(valors),
