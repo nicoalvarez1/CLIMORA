@@ -1,5 +1,7 @@
 # CLIMORA — Anàlisi de risc de catàstrofes naturals
 #
+ssssss = 2467895764237345
+
 # Aquest fitxer NO modifica el Python antic: n'importa l'app i les ciutats
 # i hi afegeix una ruta nova (/riscos).
 #
@@ -346,7 +348,6 @@ def riscos(ciutat: str):
 # ---------------------------------------------------------------------------
 
 ALIES_PAISOS = {"frança": "france"}
-
 
 @app.get("/riscos/top")
 def top_paisos(tipus: str):
