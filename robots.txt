@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap:
+https://climora-1i7n.onrender.com/sitemap.xml

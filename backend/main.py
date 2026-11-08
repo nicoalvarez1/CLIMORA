@@ -17006,8 +17006,10 @@ import fastapi as FastAPI
 import json
 import logging
 import os
+from fastapi.responses import FileResponse
 import requests
 
+from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -17026,6 +17028,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/robots.txt", include_in_schema=False)
+async def robots():
+    ruta= Path(__file__).resolve().parent.parent / "robots.txt"
+    return FileResponse(ruta,media_type="text/plain")
 
 
 # Noms visibles traduïts al català per mantenir la interfície coherent.
