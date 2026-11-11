@@ -17278,7 +17278,7 @@ def generar_conclusion_ia(ciutat_a, ciutat_b, poblacion_a, poblacion_b):
             "https://api.openai.com/v1/responses",
             headers={"Authorization": f"Bearer {clave}"},
             json={
-                "model": os.getenv("OPENAI_MODEL", "gpt-5.5"),
+                "model": os.getenv("OPENAI_MODEL", "gpt-5.6-Terra"),
                 "instructions": (
                     "Escriu en català una conclusió clara de 2 o 3 frases per a una web de clima. "
                     "Compara les dues ciutats fent servir únicament les dades proporcionades. "
@@ -17401,3 +17401,6 @@ def llistar_ciutats():
         }
         for c in cities
     ]
+zzzzzzzzz=111111111111
+dfglhdbivflsvdsfbhlfdvshb=584547875864476477496496794764967467946974967469794674967
+gfgugl=8976
