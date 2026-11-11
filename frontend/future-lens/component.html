@@ -1,0 +1,147 @@
+<div class="page-shell">
+  <div class="main-content">
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow"><span>01</span> · EXPLORADOR CLIMÀTIC ESPACIAL</p>
+        <h1 id="page-title">La teva ciutat,<br><em>en un altre clima.</em></h1>
+        <p class="intro-description">Projecta sèries de models climàtics sobre el mapa 3D. Després, obre la càmera i mira el canvi amb la lent climàtica.</p>
+      </div>
+      <div class="search-card">
+        <form id="location-form" class="location-form" role="search">
+          <label for="location-input">Cerca una ciutat o un lloc</label>
+          <div class="search-row">
+            <span class="search-icon" aria-hidden="true">⌖</span>
+            <input id="location-input" type="search" placeholder="Barcelona, Lisboa, Kyoto…" autocomplete="off" required>
+            <button class="search-submit" type="submit" aria-label="Cerca el lloc">↗</button>
+          </div>
+        </form>
+        <div id="search-results" class="search-results" role="listbox" aria-label="Resultats de la cerca" hidden></div>
+        <div class="search-actions">
+          <button id="use-location" class="text-button" type="button"><span aria-hidden="true">◎</span> Utilitza la meva ubicació</button>
+          <button id="pick-map-point" class="text-button" type="button" aria-pressed="false"><span aria-hidden="true">＋</span> Tria un punt al mapa</button>
+        </div>
+        <p id="search-status" class="search-status" role="status" aria-live="polite">Carregant el mapa de Barcelona…</p>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="Explorador de projeccions climàtiques">
+      <div class="map-stage">
+        <div id="map" class="map-surface" aria-label="Mapa interactiu en 3D"></div>
+
+        <div id="ar-view" class="ar-view" aria-hidden="true">
+          <video id="ar-video" playsinline muted></video>
+          <div id="ar-tint" class="ar-tint"></div>
+          <div class="ar-reticle" aria-hidden="true"><span></span><i></i></div>
+          <div class="ar-heading">
+            <span class="ar-dot"></span>
+            <div><strong id="ar-location">Barcelona</strong><small id="ar-period">LENT CLIMÀTICA · 2030–2049</small></div>
+          </div>
+          <div class="ar-readout">
+            <span id="ar-layer-name">ANOMALIA D'ESTIU</span>
+            <strong id="ar-main-value">—</strong>
+            <small id="ar-sub-value">Respecte al període de referència</small>
+          </div>
+          <p class="ar-disclaimer">La càmera afegeix la capa climàtica a la vista. La projecció correspon a una cel·la regional d’uns 10 km; no és una predicció d’aquest carrer ni de cada edifici.</p>
+        </div>
+
+        <div class="stage-topline">
+          <div class="map-chip"><span class="chip-pulse"></span><span id="map-place-label">BARCELONA · CATALUNYA</span></div>
+          <div id="model-chip" class="model-chip">CMIP6 <span>·</span> MODEL REGIONAL</div>
+        </div>
+
+        <div class="stage-bottomline">
+          <div class="map-legend"><span id="legend-swatch"></span><span id="legend-label">Canvi de temperatura màxima d’estiu</span></div>
+          <div class="stage-actions">
+            <button id="layer-heat" class="layer-button is-active" type="button" aria-pressed="true">Calor</button>
+            <button id="layer-rain" class="layer-button" type="button" aria-pressed="false">Pluja</button>
+            <button id="toggle-ar" class="ar-button" type="button"><span aria-hidden="true">◉</span> Obre la lent AR</button>
+          </div>
+        </div>
+        <p id="map-message" class="map-message" role="status" aria-live="polite"></p>
+      </div>
+
+      <aside class="insight-panel" aria-label="Resultats del model climàtic">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">DADES DEL MODEL</p>
+            <h2 id="selected-place">Barcelona</h2>
+            <p id="selected-region" class="region-line">Catalunya · Espanya</p>
+          </div>
+          <span class="location-mark" aria-hidden="true">◎</span>
+        </div>
+
+        <div class="model-picker">
+          <label for="model-select">Model climàtic</label>
+          <select id="model-select">
+            <option value="EC_Earth3P_HR" selected>EC-Earth3P-HR · Europa</option>
+            <option value="CMCC_CM2_VHR4">CMCC-CM2-VHR4</option>
+            <option value="FGOALS_f3_H">FGOALS-f3-H</option>
+            <option value="HiRAM_SIT_HR">HiRAM-SIT-HR</option>
+            <option value="MRI_AGCM3_2_S">MRI-AGCM3-2-S</option>
+            <option value="MPI_ESM1_2_XR">MPI-ESM1-2-XR</option>
+            <option value="NICAM16_8S">NICAM16-8S</option>
+          </select>
+          <p class="model-hint">Projeccions diàries CMIP6 amb correcció de biaix. La disponibilitat varia segons la regió.</p>
+        </div>
+
+        <div class="period-control">
+          <div class="control-label-row"><label for="period-slider">Finestra futura</label><output id="period-output" for="period-slider">2030–2049</output></div>
+          <input id="period-slider" class="range-input" type="range" min="2021" max="2030" step="1" value="2030" aria-label="Inici de la finestra futura de vint anys">
+          <div class="range-ends"><span>2021–2040</span><span>2030–2049</span></div>
+        </div>
+
+        <div id="loading-panel" class="loading-panel" aria-live="polite">
+          <span class="loader" aria-hidden="true"></span>
+          <div><strong id="loading-title">Preparant l’escena</strong><small id="loading-detail">Consultant les dades climàtiques regionals…</small></div>
+        </div>
+
+        <div id="metrics" class="metrics" hidden>
+          <div class="metric metric-primary">
+            <div class="metric-top"><span>Calor màxima a l’estiu</span><span class="metric-symbol" aria-hidden="true">↗</span></div>
+            <strong id="temp-delta">—</strong>
+            <div class="metric-compare"><span>Referència <b id="temp-base">—</b></span><span>Futur <b id="temp-future">—</b></span></div>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><span>Dies amb màxima ≥ 35 °C / any</span><span class="metric-symbol" aria-hidden="true">◒</span></div>
+            <strong id="heat-delta">—</strong>
+            <div class="metric-compare"><span>Referència <b id="heat-base">—</b></span><span>Futur <b id="heat-future">—</b></span></div>
+          </div>
+          <div class="metric">
+            <div class="metric-top"><span>Precipitació anual</span><span class="metric-symbol" aria-hidden="true">⌁</span></div>
+            <strong id="rain-delta">—</strong>
+            <div class="metric-compare"><span>Referència <b id="rain-base">—</b></span><span>Futur <b id="rain-future">—</b></span></div>
+          </div>
+        </div>
+
+        <div id="error-panel" class="error-panel" role="alert" hidden>
+          <strong>No s’han pogut carregar les dades.</strong>
+          <p id="error-detail">Comprova la connexió o prova un altre model climàtic.</p>
+          <button id="retry-data" class="retry-button" type="button">Torna-ho a provar</button>
+        </div>
+
+        <div id="model-summary" class="model-summary" hidden>
+          <span class="summary-spark" aria-hidden="true">✳</span>
+          <p id="summary-text"></p>
+        </div>
+
+        <p class="provenance">Comparació entre <b>1981–2010</b> i una finestra futura de 20 anys. El període històric també és una simulació del model, no observacions reals.</p>
+        <div class="data-footer">
+          <span id="data-status" class="data-status"><i></i> Esperant dades</span>
+          <button id="about-data" class="info-button" type="button" aria-expanded="false" aria-controls="data-details">Fonts i límits <span aria-hidden="true">＋</span></button>
+        </div>
+        <div id="data-details" class="data-details" hidden>
+          <p>La projecció és una dada regional del model escollit (cel·la aproximada de 10 km), no una predicció meteorològica ni un càlcul a escala d’edifici. Els models tenen incerteses; prova’n més d’un.</p>
+          <p>Dades: Open-Meteo Climate API · CMIP6 / HighResMIP. Mapes: OpenFreeMap · OpenMapTiles · OpenStreetMap.</p>
+          <p>L’API gratuïta d’Open-Meteo és per a ús no comercial, sense clau i amb atribució CC BY 4.0. No hi ha cap servei de pagament integrat.</p>
+          <p class="source-links"><a href="https://open-meteo.com/en/docs/climate-api" target="_blank" rel="noreferrer">Metodologia climàtica ↗</a><a href="https://open-meteo.com/en/terms" target="_blank" rel="noreferrer">Condicions de l’API ↗</a></p>
+        </div>
+      </aside>
+    </section>
+
+    <section class="how-it-works" aria-label="Com funciona Future Lens">
+      <div><span class="step-index">01</span><p><b>Tria un lloc</b><br>Cerca una ciutat o selecciona un punt.</p></div>
+      <div><span class="step-index">02</span><p><b>Explora el model</b><br>Compara el clima de referència amb una finestra futura.</p></div>
+      <div><span class="step-index">03</span><p><b>Mira al teu voltant</b><br>Activa la càmera per superposar-hi la lent climàtica.</p></div>
+    </section>
+  </div>
+</div>

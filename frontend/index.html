@@ -793,6 +793,7 @@
             <a class="enllac" href="#comparador">Explora les dades</a>
             <a class="enllac" href="#riscos">Riscos naturals</a>
             <a class="enllac" href="#viajes">Planificador de viatges</a>
+            <a class="enllac" href="#future-lens">Lent climàtica</a>
             <a class="cta" href="#comparador">Comença a explorar ↗</a>
         </nav>
     </header>
@@ -811,6 +812,7 @@
                     <a class="boto-hero" href="#comparador">Compara dues ciutats ↗</a>
                     <a class="boto-hero boto-hero-riscos" href="#riscos">Analitza riscos naturals ↗</a>
                     <a class="enllac-hero" href="#viajes">Planifica un viatge ↗</a>
+                    <a class="enllac-hero" href="#future-lens">Mira el futur al mapa ↗</a>
                     <a class="enllac-hero" href="#projecte">Descobreix CLIMORA ↓</a>
                 </div>
             </div>
@@ -838,6 +840,7 @@
             <a class="pestanya" role="tab" href="#comparador" data-vista="comparador">Comparador de ciutats</a>
             <a class="pestanya" role="tab" href="#riscos" data-vista="riscos">Riscos naturals</a>
             <a class="pestanya" role="tab" href="#viajes" data-vista="viajes">Planificador de viatges</a>
+            <a class="pestanya" role="tab" href="#future-lens" data-vista="future-lens" aria-controls="future-lens" aria-selected="false">Lent climàtica</a>
         </div>
 
         <section id="comparador">
@@ -963,6 +966,12 @@
             </section>
         </section>
 
+        <section id="future-lens" class="vista-oculta" aria-label="Lent climàtica Future Lens">
+            <div id="future-lens-component">
+                <p role="status" aria-live="polite">Carregant Future Lens…</p>
+            </div>
+        </section>
+
         <section id="viajes" class="viajes-seccion">
             <div class="wrap">
                 <div class="cap-seccio">
@@ -1067,5 +1076,7 @@
     <script src="mapa-globus.js" defer></script>
     <script src="riscos.js" defer></script>
     <script src="viajes.js" defer></script>
+    <script src="future-lens/app.js" defer></script>
+    <script src="future-lens/embed.js" defer></script>
 </body>
 </html>
